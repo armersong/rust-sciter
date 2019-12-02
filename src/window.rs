@@ -85,13 +85,20 @@ pub struct Window
 #[allow(clippy::new_without_default)]
 impl Window {
 
+	#[cfg(not(feature = "windowless"))]
 	/// Create a new main window.
 	pub fn new() -> Window {
 		Builder::main_window().create()
 	}
 
+	#[cfg(not(feature = "windowless"))]
 	/// Create a new window with the specified position as `rect(x, y, width, height)`, flags and an optional parent window.
 	pub fn create(rect: (i32, i32, i32, i32), flags: SCITER_CREATE_WINDOW_FLAGS, parent: Option<HWINDOW>) -> Window {
+		if cfg!(feature = "windowless")
+		{
+			panic!("Sciter doesn't have windows in windowless mode!");
+		}
+
 		let mut base = OsWindow::new();
 		let hwnd = base.create(rect, flags as UINT, parent.unwrap_or(0 as HWINDOW));
 		assert!(!hwnd.is_null());
@@ -102,6 +109,9 @@ impl Window {
 
 	/// Attach Sciter to an existing native window.
 	pub fn attach(hwnd: HWINDOW) -> Window {
+		// suppress warnings about unused method
+		let _ = &OsWindow::new;
+
 		assert!(!hwnd.is_null());
 		Window { base: OsWindow::from(hwnd), host: Rc::new(Host::attach(hwnd)) }
 	}
@@ -401,6 +411,7 @@ impl Builder {
 		self
 	}
 
+	#[cfg(not(feature = "windowless"))]
 	/// Consume the builder and call [`Window::create()`](struct.Window.html#method.create) with built parameters.
 	pub fn create(self) -> Window {
 		let r = self.rect;
