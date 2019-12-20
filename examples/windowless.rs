@@ -106,13 +106,14 @@ fn main() {
 	use winit::{Event, WindowEvent};
 	let skip = ();
 	let mut poll_break = false;
+	let startup = std::time::Instant::now();
 	loop {
 	// release CPU a bit, hackish
 	std::thread::sleep(std::time::Duration::from_millis(0));
 
 	// Sciter processes timers and fading effects here
 	handle_message(scwnd, Message::Heartbit {
-		milliseconds: unsafe { winapi::um::sysinfoapi::GetTickCount() }
+		milliseconds: std::time::Instant::now().duration_since(startup).as_millis() as u32,
 	});
 
 	// the actual event loop polling
