@@ -178,12 +178,14 @@ fn main() {
 									let mem_bm = CreateCompatibleBitmap(hdc, w, h);
 
 									let mut bmi = BITMAPINFO::default();
-									let mut info = &mut bmi.bmiHeader;
-									info.biSize = std::mem::size_of::<BITMAPINFO>() as u32;
-									info.biWidth = w;
-									info.biHeight = -h;
-									info.biPlanes = 1;
-									info.biBitCount = 32;
+									{
+										let mut info = &mut bmi.bmiHeader;
+										info.biSize = std::mem::size_of::<BITMAPINFO>() as u32;
+										info.biWidth = w;
+										info.biHeight = -h;
+										info.biPlanes = 1;
+										info.biBitCount = 32;
+									}
 
 									let old_bm = SelectObject(mem_dc, mem_bm as LPVOID);
 
