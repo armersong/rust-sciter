@@ -144,6 +144,13 @@ fn main() {
 
 						let on_render = move |bitmap_area: &sciter::types::RECT, bitmap_data: &[u8]|
 						{
+							#[cfg(unix)]
+							{
+								let _ = bitmap_area;
+								let _ = bitmap_data;
+								let _ = window_handle;
+							}
+
 							// Windows-specific bitmap rendering on the window
 							#[cfg(windows)]
 							{
